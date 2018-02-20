@@ -317,8 +317,8 @@ BEGIN:
 	
 	call PRINT_AVL_MEM
 	call PRINT_EXT_MEM
-	;call FREE_MEMORY        ; step2
-	;call ALLOC_MEMORY       ; step3
+	call FREE_MEMORY        ; step2
+	call ALLOC_MEMORY       ; step3
 	;call FREE_MEMORY
 	call PRINT_MCB_LIST
    
