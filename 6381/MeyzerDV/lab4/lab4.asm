@@ -4,12 +4,10 @@ STACK SEGMENT STACK
 STACK ENDS
 
 DATA SEGMENT
-	HELLO DB 'HELLO THERE!$'
 	STR_INT_IS_ALR_LOADED DB 'User interruption is already loaded',0DH,0AH,'$'
 	STR_INT_IS_UNLOADED DB 'User interruption is successfully unloaded',0DH,0AH,'$'
 	STR_INT_IS_LOADED DB 'User interruption is loaded',0DH,0AH,'$'
 	STRENDL db 0DH,0AH,'$'
-	pw_temp db '    ',0DH,0AH,'$' ; Вспомогательная строка для вывода с помощью PRINT_WRD
 DATA ENDS
 
 CODE SEGMENT
