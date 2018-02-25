@@ -40,18 +40,13 @@ ASSUME CS:CODE, DS:CODE, ES:NOTHING, SS:ASTACK
 
 
 TETR_TO_HEX PROC near
+	and AL,0Fh
+	cmp AL,09
+	jbe NEXT
+	add AL,07
+	NEXT: add AL,30h
 
-and AL,0Fh
-
-cmp AL,09
-
-jbe NEXT
-
-add AL,07
-
-NEXT: add AL,30h
-
-ret
+	ret
 
 TETR_TO_HEX ENDP
 
@@ -59,32 +54,25 @@ TETR_TO_HEX ENDP
 
 PRINT PROC near
 
- mov  ah,9                          
- int  21h
- ret
+	mov  ah,9                          
+	int  21h
+ 	ret
 
 PRINT ENDP
 
 
 BYTE_TO_HEX PROC near
 
-push CX
+	push CX
+	mov AH,AL
+	call TETR_TO_HEX
+	xchg AL,AH
+	mov CL,4
+	shr AL,CL
+	call TETR_TO_HEX ;в AL старшая цифра
+	pop CX ;в AH младшая
 
-mov AH,AL
-
-call TETR_TO_HEX
-
-xchg AL,AH
-
-mov CL,4
-
-shr AL,CL
-
-call TETR_TO_HEX ;в AL старшая цифра
-
-pop CX ;в AH младшая
-
-ret
+	ret
 
 BYTE_TO_HEX ENDP
 
@@ -97,33 +85,21 @@ WRD_TO_HEX PROC near
 ; в AX - число, DI - адрес последнего символа
 
 
-push BX
+	push BX
+	mov BH,AH
+	call BYTE_TO_HEX
+	mov [DI],AH
+	dec DI
+	mov [DI],AL
+	dec DI
+	mov AL,BH
+	call BYTE_TO_HEX
+	mov [DI],AH
+	dec DI
+	mov [DI],AL
+	pop BX
 
-mov BH,AH
-
-call BYTE_TO_HEX
-
-mov [DI],AH
-
-dec DI
-
-mov [DI],AL
-
-dec DI
-
-mov AL,BH
-
-call BYTE_TO_HEX
-
-mov [DI],AH
-
-dec DI
-
-mov [DI],AL
-
-pop BX
-
-ret
+	ret
 
 WRD_TO_HEX ENDP
 
@@ -135,47 +111,28 @@ BYTE_TO_DEC PROC near
 
 ; AL содержит исходный байт
 
-push	AX
-
-push CX
-
-push DX
-
-xor AH,AH
-
-xor DX,DX
-
-mov CX,10
-
-loop_bd: div CX
-
-or DL,30h
-
-mov [SI],DL
-
-dec SI
-
-xor DX,DX
-
-cmp AX,10
-
-jae loop_bd
-
-cmp AL,00h
-
-je end_l
-
-or AL,30h
-
-mov [SI],AL
-
-end_l: pop DX
-
-pop CX
-
-pop	AX
-
-ret
+	push	AX
+	push CX
+	push DX
+	xor AH,AH
+	xor DX,DX
+	mov CX,10
+	loop_bd: div CX
+	or DL,30h
+	mov [SI],DL
+	dec SI
+	xor DX,DX
+	cmp AX,10
+	jae loop_bd
+	cmp AL,00h
+	je end_l
+	or AL,30h
+	mov [SI],AL
+	end_l: pop DX
+	pop CX
+	pop	AX
+	
+	ret
 
 BYTE_TO_DEC ENDP
 
@@ -185,24 +142,15 @@ BYTE_TO_DEC ENDP
 
 PCTYPE	PROC	NEAR
 
-push	BX
+	push	BX
+	push	ES
+	mov	BX,0F000H
+	mov	ES,BX
+	mov	AL,ES:[0FFFEH]
+	pop	ES
+	pop	BX
 
-push	ES
-
-
-mov	BX,0F000H
-
-mov	ES,BX
-
-mov	AL,ES:[0FFFEH]
-
-
-pop	ES
-
-pop	BX
-
-
-ret
+	ret
 PCTYPE	ENDP
 
 
@@ -281,58 +229,55 @@ mPC_conv:   lea dx, isPC_conv;
 
 ;if pc type undefined
 
-call BYTE_TO_HEX
-mov [di-1],ax 
-;mov [PH],ax 
-mov dx, offset TYPE_PC;
-call PRINT
+	call BYTE_TO_HEX
+	mov [di-1],ax 
+	;mov [PH],ax 
+	mov dx, offset TYPE_PC;
+	call PRINT
 mVMSD:  
 
 ;;;;DOS TYPE
-mov	AH,30H
-INT	21H
+	mov	AH,30H
+	INT	21H
 
 
-push ax
-mov si, offset MOD_N
-call BYTE_TO_DEC
-pop ax
-mov al,ah
-mov si, offset END_MOD_N
-call BYTE_TO_DEC
-mov dx, offset  DOS_V;
-call PRINT
+	push ax
+	mov si, offset MOD_N
+	call BYTE_TO_DEC
+	pop ax
+	mov al,ah
+	mov si, offset END_MOD_N
+	call BYTE_TO_DEC
+	mov dx, offset  DOS_V;
+	call PRINT
 
 ;;;;oem
 
-mov al,bh
-mov di, offset ENDOEM
-call BYTE_TO_HEX
-mov [di-1],ax
-mov dx, offset OEM;
-call PRINT
+	mov al,bh
+	mov di, offset ENDOEM
+	call BYTE_TO_HEX
+	mov [di-1],ax
+	mov dx, offset OEM;
+	call PRINT
 
 ;; user number
 
-mov ax,cx
-mov di, offset USERNEND
-call WRD_TO_HEX
-mov al,bl
-call BYTE_TO_HEX
-mov [di-2],ax
+	mov ax,cx
+	mov di, offset USERNEND
+	call WRD_TO_HEX
+	mov al,bl
+	call BYTE_TO_HEX
+	mov [di-2],ax
+	mov dx, offset USERN;
+	call PRINT
 
-mov dx, offset USERN;
-call PRINT
 
+	;end of program
+	xor AL,AL
+	mov AH,4Ch
+	int 21H
 
-;end of program
-xor AL,AL
-
-mov AH,4Ch
-
-int 21H
 MAIN ENDP
-
 CODE ENDS
 END MAIN
 
