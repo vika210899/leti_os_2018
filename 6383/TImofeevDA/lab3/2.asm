@@ -281,16 +281,16 @@ PRINT_AVL_MEM ENDP
 
 FREE_MEMORY PROC NEAR
 	pusha
+    push es
+    push cs
+    pop es
 	mov ax, offset end_byte_of_program
-	mov bx,10h
-	xor dx,dx
-	div bx
-	inc ax
-	add ax,040h ; 200 á«®¢ ­  PSP
-	add ax,020h ; 100 á«®¢
+    shr ax, 4
+    inc ax
 	mov bx,ax
 	mov ah,4Ah
 	int 21h
+    pop es
 	popa
 	ret
 FREE_MEMORY ENDP
