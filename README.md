@@ -33,7 +33,7 @@
 | КалашниковМ   | Transliteration    |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
 | КачановаЕ     | kachanovaekaterina |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
 | КухаревМ      | MikeKuh            |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
-| ЛопатинаА     | Anastasiyalopatina |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
+| ЛопатинаА     | Anastasiyalopatina | 09.03 |   -   |   -   |   -   |   -   |   -   |   -   |
 | МейзерД       | Denmey             | 11.02 | 11.02 |   -   |   -   |   -   |   -   |   -   |
 | ПоляковН      | HECTOPK            |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
 | ПоповН        | Nikitapopov        |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
