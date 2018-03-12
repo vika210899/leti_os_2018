@@ -86,115 +86,115 @@ end_l:      pop      DX
 BYTE_TO_DEC		ENDP
 ;--------------------------------------------------
 PRINT_A_STR		PROC near
-			mov AH,09h
-            int 21h
+			mov 	AH,09h
+            int 	21h
 			ret
 PRINT_A_STR		ENDP
 ;--------------------------------------------------
 CONDITION_TYPE_PC	PROC near
-			mov BX,0F000h
-			mov ES,BX
-			mov AL,ES:[0FFFEh]
+			mov 	BX,0F000h
+			mov 	ES,BX
+			mov 	AL,ES:[0FFFEh]
 			
-			mov DX,offset TypePC
-			call PRINT_A_STR
+			mov 	DX,offset TypePC
+			call 	PRINT_A_STR
 			
 CHOICE1:
-			mov DX,offset PC
-			call PRINT_A_STR
-			jmp END_CONDITION
+			mov 	DX,offset PC
+			call 	PRINT_A_STR
+			jmp 	END_CONDITION
 CHOICE2:
-			mov DX,offset PCORXT
-			call PRINT_A_STR
-			jmp END_CONDITION
+			mov 	DX,offset PCORXT
+			call 	PRINT_A_STR
+			jmp 	END_CONDITION
 CHOICE3:
-			mov DX,offset ATPC
-			call PRINT_A_STR
-			jmp END_CONDITION
+			mov 	DX,offset ATPC
+			call 	PRINT_A_STR
+			jmp 	END_CONDITION
 CHOICE4:
-			mov DX,offset PS2model30
-			call PRINT_A_STR
-			jmp END_CONDITION
+			mov 	DX,offset PS2model30
+			call 	PRINT_A_STR
+			jmp 	END_CONDITION
 CHOICE5:
-			mov DX,offset PS2model80
-			call PRINT_A_STR
-			jmp END_CONDITION
+			mov 	DX,offset PS2model80
+			call 	PRINT_A_STR
+			jmp 	END_CONDITION
 CHOICE6:
-			mov DX,offset PCjr
-			call PRINT_A_STR
-			jmp END_CONDITION
+			mov 	DX,offset PCjr
+			call 	PRINT_A_STR
+			jmp 	END_CONDITION
 CHOICE7:
-			mov DX,offset PCConvertible
-			call PRINT_A_STR
-			jmp END_CONDITION
+			mov 	DX,offset PCConvertible
+			call 	PRINT_A_STR
+			jmp 	END_CONDITION
 CHOICE8:			
-			mov DI,offset STRtypepc
-			inc DI
-			call WRD_TO_HEX
-			mov DX,offset STRtypepc
-			call PRINT_A_STR
+			mov 	DI,offset STRtypepc
+			inc 	DI
+			call 	WRD_TO_HEX
+			mov 	DX,offset STRtypepc
+			call 	PRINT_A_STR
 END_CONDITION:
 			ret
 CONDITION_TYPE_PC ENDP
 ;--------------------------------------------------
 SYSTEM_VERSION	PROC near
-			push BX
-			push CX
-			mov DX,offset SystemVersion
-			call PRINT_A_STR
-			mov SI,offset STRsystemversion
-			call BYTE_TO_DEC
-			xchg AH,AL
-			add SI,3
-			call BYTE_TO_DEC
-			mov DX,offset STRsystemversion
-			call PRINT_A_STR
-			pop CX
-			pop BX
+			push 	BX
+			push 	CX
+			mov 	DX,offset SystemVersion
+			call 	PRINT_A_STR
+			mov 	SI,offset STRsystemversion
+			call 	BYTE_TO_DEC
+			xchg 	AH,AL
+			add 	SI,3
+			call 	BYTE_TO_DEC
+			mov 	DX,offset STRsystemversion
+			call 	PRINT_A_STR
+			pop 	CX
+			pop 	BX
 			ret
 SYSTEM_VERSION ENDP
 ;--------------------------------------------------
 NUMBER_OEM	PROC near
-			mov SI,offset STRnumberOEM
-			mov DX,offset NumberOEM
-			call PRINT_A_STR
-			push BX
-			push CX
-			mov AL,BH
-			add SI,2
-			call BYTE_TO_DEC
-			mov DX,offset STRnumberOEM
-			call PRINT_A_STR
-			pop CX
-			pop BX
+			mov 	SI,offset STRnumberOEM
+			mov 	DX,offset NumberOEM
+			call 	PRINT_A_STR
+			push 	BX
+			push 	CX
+			mov 	AL,BH
+			add 	SI,2
+			call 	BYTE_TO_DEC
+			mov 	DX,offset STRnumberOEM
+			call 	PRINT_A_STR
+			pop 	CX
+			pop 	BX
 			ret
 NUMBER_OEM ENDP
 ;--------------------------------------------------
 NUMBER_USER	PROC near
-			mov DI,offset STRnumberUser
-			mov DX,offset NumberUser
-			call PRINT_A_STR
-			mov AX,CX
-			add DI,5
-			call WRD_TO_HEX
-			sub DI,2
-			mov AL,BL
-			call BYTE_TO_HEX
-			mov	[DI],AX
-			mov DX,offset STRnumberUser
-			call PRINT_A_STR	
+			mov 	DI,offset STRnumberUser
+			mov 	DX,offset NumberUser
+			call 	PRINT_A_STR
+			mov 	AX,CX
+			add 	DI,5
+			call 	WRD_TO_HEX
+			sub 	DI,2
+			mov 	AL,BL
+			call 	BYTE_TO_HEX
+			mov		[DI],AX
+			mov 	DX,offset STRnumberUser
+			call 	PRINT_A_STR	
 			ret
 NUMBER_USER ENDP
 ;--------------------------------------------------
 ;КОД
 BEGIN:			
-			call CONDITION_TYPE_PC
-			xor AX,AX
-			mov AH,30h
-			int 21h
-			call SYSTEM_VERSION
-			call NUMBER_OEM
-			call NUMBER_USER			
+			call 	CONDITION_TYPE_PC
+			xor 	AX,AX
+			mov 	AH,30h
+			int 	21h
+			call 	SYSTEM_VERSION
+			call 	NUMBER_OEM
+			call 	NUMBER_USER			
 ;Вывод в DOS
 			xor     AL,AL   
 			mov     AH,4Ch   
