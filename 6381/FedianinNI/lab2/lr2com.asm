@@ -210,10 +210,10 @@ WM				ENDP
 ;--------------------------------------------------
 ;КОД
 BEGIN:			
-			call SAUM
-			call SAE
-			call TCS
-			call CE
+			call 	SAUM
+			call 	SAE
+			call 	TCS
+			call 	CE
 ;Вывод в DOS
 			xor     AL,AL   
 			mov     AH,4Ch   
