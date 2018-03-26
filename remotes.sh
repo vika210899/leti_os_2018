@@ -26,3 +26,4 @@ git remote add GerasimovaDV https://github.com/darinagerasimova/leti_os_2018.git
 git remote add MiheevaEE https://github.com/katierm/leti_os_2018.git
 git remote add StepanovaSI https://github.com/PeppaPig153/leti_os_2018.git
 git remote add TimofeevDA https://github.com/datdimotim/leti_os_2018.git
+git remote add YakovlevEA https://github.com/EgorYackovleff/leti_os_2018.git
