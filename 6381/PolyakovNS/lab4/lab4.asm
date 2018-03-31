@@ -218,7 +218,7 @@ UNLOAD_INT PROC near
     pop ds
 
 
-	mov es, KEEP_PSP
+	mov es, es:KEEP_PSP
 	push es
     mov es, es:[2Ch] 
     mov ah, 49h
@@ -237,7 +237,7 @@ MAIN PROC FAR
 	push ds
     sub ax,ax
     push ax
-    mov KEEP_PSP, es
+    mov cs:KEEP_PSP, es
 	
 	call CHECK_INT
 	cmp al, 1
