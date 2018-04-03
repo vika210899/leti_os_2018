@@ -16,11 +16,27 @@ CODE SEGMENT
 
 
 HANDLER PROC FAR
+    ; используем свой стек ;
+    cli                    ;
+    mov cs:KEEP_SS, ss     ;
+    mov cs:KEEP_SP, sp     ;
+    mov sp, SSEG           ;
+    mov ss, sp             ;
+    mov sp, 100h           ;
+    sti                    ;
+    ; ----------------------
     pusha
     in al,60h          ; al = скан-код
     cmp al, REQ_KEY    
     je do_req
     popa
+    ;переключаем стек обратно ;
+    cli                       ;
+    mov sp, cs:KEEP_SS        ;              ;
+    mov ss, sp                ;
+    mov sp, cs:KEEP_SP        ;
+    sti                       ;
+    ; -------------------------
     jmp dword ptr cs:[KEEP_IP]  ; стандартный обработчик
     do_req:
         in al, 61h  ; al = значение порта управления клавиатурой
@@ -62,12 +78,21 @@ HANDLER PROC FAR
     popa
     mov al, 20h
     out 20h, al
+    ;переключаем стек обратно ;
+    cli                       ;
+    mov sp, cs:KEEP_SS        ;              ;
+    mov ss, sp                ;
+    mov sp, cs:KEEP_SP        ;
+    sti                       ;
+    ; -------------------------
     iret
     ;==== data =====
     SIGN DB 'HANDLE'
     KEEP_IP DW 0
     KEEP_CS DW 0
     KEEP_PSP DW 0h
+    KEEP_SS DW 0h
+    KEEP_SP DW 0h
     last_byte:
 HANDLER ENDP
 
@@ -107,6 +132,8 @@ SET_HANDLER PROC NEAR
  
     mov cs:KEEP_IP, bx    ; 
     mov cs:KEEP_CS, es
+    
+    mov sp, 50h
     
     mov ax, SEG HANDLER
     mov ds, ax
