@@ -8,15 +8,27 @@ CODE SEGMENT
 
 	
 INTERRUPT	PROC far
-pusha
+mov  CS:KEEP_AX, AX
 
 	in   AL, 60h			;al = скан-код
 	cmp  AL, REQ_KEY		; требуемый код?
 	je   do_req
-popa
-	jmp  dword ptr CS:[KEEP_IP]
+
+		mov  AX, CS:KEEP_AX
+		jmp  dword ptr CS:[KEEP_IP]
 		
 do_req:
+;;;
+;
+mov  CS:KEEP_SS, SS
+mov  CS:KEEP_SP, SP
+
+mov  AX, SEG NEW_STACK
+mov  SS, AX
+mov  SP, offset QWE
+pusha
+;
+;;;
 	in   AL, 61h			; 
 	or   AL, 80h			;
 	out  61h, AL			; 7 бит ->1
@@ -58,8 +70,16 @@ skip:
 		
 INT_EXIT:		
 popa
+
+mov  AX, CS:KEEP_SS
+mov  SS, AX
+mov  SP, CS:KEEP_SP
+
 	mov al, 20h
 	out 20h, al
+	
+mov  AX, CS:KEEP_AX
+
 	iret	
 	
 	nop
@@ -67,6 +87,13 @@ popa
 	KEEP_IP		dw 0h
 	KEEP_CS 	dw 0h
 	KEEP_PSP	dw 0h
+	
+	KEEP_SP		dw 0h
+	KEEP_SS		dw 0h
+	KEEP_AX		dw 0h
+	
+	NEW_STACK	db 1Ah DUP(0)	;можно поместить 13 регистров
+	
 INTERRUPT	ENDP
 QWE:		
 	
