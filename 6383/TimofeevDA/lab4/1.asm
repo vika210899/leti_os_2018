@@ -1,5 +1,4 @@
 .286
-
 SSEG SEGMENT stack
 db 100h dup(?)
 SSEG ENDS
@@ -81,6 +80,15 @@ HANDLER PROC FAR
     jmp entry
     SIGN DB 'HANDLE'
     entry:
+    ; используем свой стек ;
+    cli                    ;
+    mov cs:KEEP_SS, ss     ;
+    mov cs:KEEP_SP, sp     ;
+    mov sp, SSEG           ;
+    mov ss, sp             ;
+    mov sp, 100h           ;
+    sti                    ;
+    ; ----------------------
     pusha
 	push es
 	push ds
@@ -125,10 +133,21 @@ HANDLER PROC FAR
     popa
     mov al, 20h
     out 20h, al
+    
+    ;переключаем стек обратно ;
+    cli                       ;
+    mov sp, cs:KEEP_SS        ;              ;
+    mov ss, sp                ;
+    mov sp, cs:KEEP_SP        ;
+    sti                       ;
+    ; -------------------------
+    
     iret
     KEEP_CS DW 0
     KEEP_IP DW 0
     KEEP_PSP DW 0h
+    KEEP_SS DW 0h
+    KEEP_SP DW 0h
 	COUNTER DW 0h
     last_byte:
 HANDLER ENDP
@@ -170,14 +189,25 @@ SET_HANDLER PROC NEAR
     mov cs:KEEP_IP, bx    ; 
     mov cs:KEEP_CS, es
     
-    mov ax, SEG HANDLER
+    ; поскольку наш обработчик
+    ; использует стек начиная с вершины (100h)
+    ; то чтобы иметь гарантию, что 
+    ; он не затрет наш стек, если произойдет 
+    ; прерывание от таймера После установки 
+    ; нашего прерывания но До выхода из программы.
+    ;      Для этого перед установкой прерывания 
+    ;      перемещаем указатель на вершину стека 
+    ;      вперед.
+    mov sp, 50h
+    
+    mov ax, SEG HANDLER     ; устанавливаем обработчик
     mov ds, ax
     mov dx, offset HANDLER
     mov ah, 25h
     mov al, 1Ch
     int 21h
     
-    mov dx, offset last_byte
+    mov dx, offset last_byte ; выходим в dos
     shr dx, 4
     inc dx
     add dx, CODE
