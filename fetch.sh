@@ -27,3 +27,5 @@ git fetch MiheevaEE
 git fetch StepanovaSI
 git fetch TimofeevDA
 git fetch YakovlevEA
+git fetch BazarovIA
+
