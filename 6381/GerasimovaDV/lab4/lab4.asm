@@ -14,9 +14,21 @@ INTERRUPT PROC FAR
 	keep_ip dw ?
 	is_loaded dw 0FFDAh
 	counter db 'Количество вызовов прерывания: 0000 $'
+	ss_keeper dw ?
+	sp_keeper dw ?
+	ax_keeper dw ?
+	inter_stack dw 64 dup (?)
+
 
 function:
-	push ax
+	mov ss_keeper, ss
+ 	mov sp_keeper, sp
+ 	mov ax_keeper, ax
+ 	mov ax, seg inter_stack
+ 	mov ss, ax
+ 	mov sp, 0
+ 	mov ax, ax_keeper
+;	push ax
 	push bx
 	push cx
 	push dx
@@ -100,8 +112,12 @@ _not:
 	pop dx
 	pop cx
 	pop bx
-	pop ax       ;восстановление ax
 
+	mov ax, ss_keeper
+ 	mov ss, ax
+ 	mov ax, ax_keeper
+ 	mov sp, sp_keeper
+	;pop ax       ;восстановление ax
 	iret
 INTERRUPT ENDP
 
