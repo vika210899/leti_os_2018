@@ -1,14 +1,6 @@
-STACK SEGMENT
+INT_STACK SEGMENT
 	DW 100h DUP(?)
-STACK ENDS
-;=======================================================
-DATA SEGMENT
-	INTER_ALREADY db 'Interruption is already loaded',13,10,36
-	INTER_UNLOADED db 'Interruption is unloaded',13,10,36
-	INTER_LOADED db 'Interruption is loaded',13,10,36
-	INTER_NOT_LOADED db 'Interruption is not loaded',13,10,36
-	
-DATA ENDS
+INT_STACK ENDS
 ;=======================================================
 CODE SEGMENT	
 ASSUME CS:CODE, DS:DATA, SS:STACK
@@ -64,7 +56,15 @@ INTER PROC FAR
 	KEEP_IP DW 0
 	KEEP_PSP DW 0
 	COUNT db 0
+	KEEP_SS dw 0
+	KEEP_SP dw 0
 	INT_CODE:
+	push ax
+	mov KEEP_SS,ss
+	mov KEEP_SP,sp
+	mov ax, seg INT_STACK
+	mov ss, ax
+	mov sp, 100h
 	push ax
 	push dx
 	push ds
@@ -96,11 +96,16 @@ next_it:
 	pop ds
 	pop dx
 	pop ax 
+	mov ss, KEEP_SS
+	mov sp, KEEP_SP
 	mov al,20h
 	out 20h,al
+	pop ax
 	iret
 end_inter:
 INTER ENDP
+;-------------------------------------------------------
+
 ;-------------------------------------------------------
 LOAD_INT PROC near
 	push ax
@@ -294,4 +299,17 @@ end_prog:
 
 MAIN ENDP	
 CODE ENDS
+;=======================================================
+STACK SEGMENT
+	DW 100h DUP(?)
+STACK ENDS
+;=======================================================
+DATA SEGMENT
+	INTER_ALREADY db 'Interruption is already loaded',13,10,36
+	INTER_UNLOADED db 'Interruption is unloaded',13,10,36
+	INTER_LOADED db 'Interruption is loaded',13,10,36
+	INTER_NOT_LOADED db 'Interruption is not loaded',13,10,36
+	
+DATA ENDS
+;=======================================================
 END MAIN
