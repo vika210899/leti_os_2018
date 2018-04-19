@@ -53,6 +53,14 @@ WRD_TO_HEX		ENDP
 ;-------------------------------;
 	
 INTERRUPT	PROC far
+mov  CS:KEEP_AX, AX
+mov  CS:KEEP_SS, SS
+mov  CS:KEEP_SP, SP
+
+mov  AX, SEG NEW_STACK
+mov  SS, AX
+mov  SP, offset QWE
+
 	pusha
 	push ES
 		
@@ -89,8 +97,15 @@ INTERRUPT	PROC far
 	pop  ES
 	popa
 	
+mov  AX, CS:KEEP_SS
+mov  SS, AX
+mov  SP, CS:KEEP_SP
+
 	mov al, 20h
 	out 20h, al
+	
+mov  AX, CS:KEEP_AX
+
 	iret	
 	
 	nop
@@ -100,6 +115,13 @@ INTERRUPT	PROC far
 	KEEP_IP		dw 0h
 	KEEP_PSP	dw 0h
 	COUNTER		dw 0h
+	
+	KEEP_SP		dw 0h
+	KEEP_SS		dw 0h
+	KEEP_AX		dw 0h
+	
+	NEW_STACK	db 20h DUP(0)
+	
 INTERRUPT	ENDP
 QWE:		
 	
