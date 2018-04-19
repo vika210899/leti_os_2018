@@ -17,7 +17,7 @@ SIZE_    		db   '              |$'
 DATA_    		db   '                $'
 LINE_  			db   0DH,0AH,'$'
 ERROR_			db   'Error in allocating memory','$'
-END_	 		db 	 0
+
 
 
 TETR_TO_HEX  PROC      near
@@ -319,5 +319,6 @@ CONTINUE:
           xor       AL,AL
           mov       AH,4CH
           int       21H
+	  END_	 		db 	 0
 TESTPC      ENDS
 END       START
