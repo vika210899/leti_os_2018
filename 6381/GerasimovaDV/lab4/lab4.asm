@@ -121,8 +121,8 @@ _not:
 	iret
 INTERRUPT ENDP
 
-END_INT PROC
-END_INT ENDP
+LAST_BYTE PROC
+LAST_BYTE ENDP
 
 ISLOADED PROC near
 	push dx
@@ -283,7 +283,7 @@ al_loaded:
 ;Загрузка
 	call LOAD
 ;Оставляем обработчик прерываний в памяти
-	mov dx,offset END_INT
+	mov dx,offset LAST_BYTE
 	mov cl,4h
 	shr dx,cl
 	inc dx
