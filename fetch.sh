@@ -28,7 +28,6 @@ git fetch StepanovaSI
 git fetch TimofeevDA
 git fetch YakovlevEA
 git fetch BazarovIA
-git fetch LunchukDV
-git fetch LavrenkovaEL
+git fetch LubchukDV
 git fetch TokunMS
 
