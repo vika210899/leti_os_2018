@@ -1,3 +1,4 @@
+git remote add os18 git@github.com:JAkutenshi/leti_os_2018.git
 git remote add MihailovYA https://github.com/YuraMihailov123/leti_os_2018.git
 git remote add VergeychickGL https://github.com/gglebaty/leti_os_2018.git
 git remote add MedvedevGO https://github.com/glebmedvedev/leti_os_2018.git
