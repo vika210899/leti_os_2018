@@ -32,7 +32,7 @@
 | ГерасимоваД   | darinagerasimova   | 25.02 |   -   |   -   |   -   |   -   |   -   |   -   |
 | ДайновичА     | aDainovich         |  !?!  |   -   |   -   |   -   |   -   |   -   |   -   |
 | ЗоринаИ       | irenZory           |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
-| КалашниковМ   | Transliteration    |   ~   |   -   |   -   |   -   |   -   |   -   |   -   |
+| КалашниковМ   | Transliteration    |   ~   | 21.04 |   -   |   -   |   -   |   -   |   -   |
 | КачановаЕ     | kachanovaekaterina |   -   |   -   |   -   |   -   |   -   |   -   |   -   |
 | КухаревМ      | MikeKuh            | 12.03 |   -   |   -   |   -   |   -   |   -   |   -   |
 | ЛопатинаА     | Anastasiyalopatina | 09.03 |   -   |   -   |   -   |   -   |   -   |   -   |
