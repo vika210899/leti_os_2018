@@ -21,9 +21,20 @@ INTERRUPTION PROC FAR
 	KEEP_CS 	dw 0 ;offset 7
 	KEEP_IP 	dw 0 ;offset 9
 	INTER_SET 	dw 0ABCDh ;offset 11
-	COUNT 		db 'Interrupts: 0000 $' ;offset 13                              
+	COUNT 		db 'Interrupts: 0000 $' ;offset 13
+	KEEP_SS		dw ?
+	KEEP_AX		dw ?
+	KEEP_SP		dw ?
+	INT_STACK	dw 64 dup (?)
+	
 begin:
-	push ax      
+	mov KEEP_SS, ss
+ 	mov KEEP_SP, sp
+ 	mov KEEP_AX, ax
+ 	mov ax, seg INT_STACK
+ 	mov ss, ax
+ 	mov sp, 0
+ 	mov ax, KEEP_AX  
 	push bx
 	push cx
 	push dx
@@ -105,11 +116,14 @@ output:
 	pop dx
 	pop cx
 	pop bx
-	pop ax
+	mov ax, KEEP_SS
+ 	mov ss, ax
+ 	mov ax, KEEP_AX
+ 	mov sp, KEEP_SP
 	iret
 INTERRUPTION ENDP
 ;----------------------------
-inter_end:
+last_byte:
 INSTALL_CHECK PROC NEAR	;Проверка установки прерывания
 	push bx
 	push dx
@@ -260,7 +274,7 @@ MAIN  PROC FAR
 ;Загрузка резидента
 not_resident: 
 	call INSTALL_INTER 
-	lea dx, inter_end
+	lea dx, last_byte
 	mov cl, 04h
 	shr dx, cl
 	add dx, 1Bh
