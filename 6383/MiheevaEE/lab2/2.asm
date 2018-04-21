@@ -5,10 +5,10 @@ START:     JMP     BEGIN
 
 MEM db 13, 10, "HIDDEN MEMORY ADDRESS:     $" ; 17 symbols
 ENV db 13, 10, "ENVIRONMENT ADDRESS:     $" ; 23 symbols
-TAIL db 13, 10, "COMAND LINE TAIL:        $" ; 21 symbols
+TAIL db 13, 10, "COMAND LINE TAIL: $" ; 21 symbols
 CONT db 13, 10, "CONTENT: ", "$"
 PATH db 13, 10, "PATH: ", "$" ; 8 symbols
-
+NEW_LINE DB  0AH, 0DH, '$'
 
 ;-------------------------------
 PRINT PROC near
@@ -35,27 +35,26 @@ INFO PROC near
 	call PRINT
 	
 	; Tail
-	xor cx, cx
-	mov cl, ds:[80h]
-	mov si, offset TAIL
-	add si, 20
-	cmp cl,0
-	jz empty
-	xor di, di
-	xor ax, ax
-	read_write_tail: 
-		mov al, ds:[81h+di]
-		mov [si], al
-		inc di
-		inc si
-                jmp read_write_tail
-		mov dx, offset TAIL
+	mov dx, offset TAIL
+	mov ah, 09h
+	int 21h
+	mov bx, 80h
+	mov al, [bx] 
+	cmp al, 0
+	je empty
+		mov ah, 0
+		mov di, ax
+		mov al, [di+81h]
+		push ax
+		mov byte ptr [di+81h], '$'
+		mov dx, 81h
 		call PRINT
-		jmp content
+		pop ax
+		mov [di+81h], al
+
 	empty:
-		mov dx, offset TAIL
-		call PRINT
-	content: 
+	
+	;content: 
 	
 	; Content
 	mov dx, offset CONT
@@ -105,21 +104,21 @@ NEXT:      add      AL,30h
 TETR_TO_HEX   ENDP
 ;-------------------------------
 BYTE_TO_HEX   PROC  near
-; байт в AL переводится в два символа шестн. числа в AX
+; ГЎГ Г©ГІ Гў AL ГЇГҐГ°ГҐГўГ®Г¤ГЁГІГ±Гї Гў Г¤ГўГ  Г±ГЁГ¬ГўГ®Г«Г  ГёГҐГ±ГІГ­. Г·ГЁГ±Г«Г  Гў AX
            push     CX
            mov      AH,AL
            call     TETR_TO_HEX
            xchg     AL,AH
            mov      CL,4
            shr      AL,CL
-           call     TETR_TO_HEX ;в AL старшая цифра
-           pop      CX          ;в AH младшая
+           call     TETR_TO_HEX ;Гў AL Г±ГІГ Г°ГёГ Гї Г¶ГЁГґГ°Г 
+           pop      CX          ;Гў AH Г¬Г«Г Г¤ГёГ Гї
            ret
 BYTE_TO_HEX  ENDP
 ;-------------------------------
 WRD_TO_HEX   PROC  near
-;перевод в 16 с/с 16-ти разрядного числа
-; в AX - число, DI - адрес последнего символа
+;ГЇГҐГ°ГҐГўГ®Г¤ Гў 16 Г±/Г± 16-ГІГЁ Г°Г Г§Г°ГїГ¤Г­Г®ГЈГ® Г·ГЁГ±Г«Г 
+; Гў AX - Г·ГЁГ±Г«Г®, DI - Г Г¤Г°ГҐГ± ГЇГ®Г±Г«ГҐГ¤Г­ГҐГЈГ® Г±ГЁГ¬ГўГ®Г«Г 
            push     BX
            mov      BH,AH
            call     BYTE_TO_HEX
@@ -160,15 +159,17 @@ end_l:     pop      DX
            ret
 BYTE_TO_DEC    ENDP
 ;-------------------------------
-; КОД
+; ГЉГЋГ„
 BEGIN:   
 		   call INFO
 		   mov ah, 10h
 		   int 16h
-; Выход в DOS
+; Г‚Г»ГµГ®Г¤ Гў DOS
            xor     AL,AL
+	;	mov ah, 01h
+     	;	int 21h
            mov     AH,4Ch
            int     21H
 		   
 TESTPC    ENDS
-END       START     ;конец модуля, START - точка входа
+END       START     ;ГЄГ®Г­ГҐГ¶ Г¬Г®Г¤ГіГ«Гї, START - ГІГ®Г·ГЄГ  ГўГµГ®Г¤Г 
