@@ -13,7 +13,7 @@ INTERRUPT PROC FAR
 	keep_cs dw ?
 	keep_ip dw ?
 	is_loaded dw 0FFDAh
-	counter db 'Количество вызовов прерывания: 0000 $'
+	counter db '╨Ъ╨╛╨╗╨╕╤З╨╡╤Б╤В╨▓╨╛ ╨▓╤Л╨╖╨╛╨▓╨╛╨▓ ╨┐╤А╨╡╤А╤Л╨▓╨░╨╜╨╕╤П: 0000 $'
 	ss_keeper dw ?
 	sp_keeper dw ?
 	ax_keeper dw ?
@@ -33,18 +33,18 @@ function:
 	push cx
 	push dx
 
-	;Получение курсора
+	;╨Я╨╛╨╗╤Г╤З╨╡╨╜╨╕╨╡ ╨║╤Г╤А╤Б╨╛╤А╨░
 	mov ah,3h
 	mov bh,0h
 	int 10h
-	push dx ;Сохраняем курсор в стеке
+	push dx ;╨б╨╛╤Е╤А╨░╨╜╤П╨╡╨╝ ╨║╤Г╤А╤Б╨╛╤А ╨▓ ╤Б╤В╨╡╨║╨╡
 
-	;Установка курсора
+	;╨г╤Б╤В╨░╨╜╨╛╨▓╨║╨░ ╨║╤Г╤А╤Б╨╛╤А╨░
 	mov ah,02h
 	mov bh,0h
 	mov dx,0214h
 	int 10h
-	;Подсчет кол-ва прерываний
+	;╨Я╨╛╨┤╤Б╤З╨╡╤В ╨║╨╛╨╗-╨▓╨░ ╨┐╤А╨╡╤А╤Л╨▓╨░╨╜╨╕╨╣
 	push si
 	push cx
 	push ds
@@ -89,7 +89,7 @@ _not:
   pop ds
 	pop cx
 	pop si
-	;Печать строки
+	;╨Я╨╡╤З╨░╤В╤М ╤Б╤В╤А╨╛╨║╨╕
 	push es
 	push bp
 	mov ax,SEG counter
@@ -103,7 +103,7 @@ _not:
 	int 10h
 	pop bp
 	pop es
-	;восстановка курсора
+	;╨▓╨╛╤Б╤Б╤В╨░╨╜╨╛╨▓╨║╨░ ╨║╤Г╤А╤Б╨╛╤А╨░
 	pop dx
 	mov ah,02h
 	mov bh,0h
@@ -117,7 +117,7 @@ _not:
  	mov ss, ax
  	mov ax, ax_keeper
  	mov sp, sp_keeper
-	;pop ax       ;восстановление ax
+	;pop ax       ;╨▓╨╛╤Б╤Б╤В╨░╨╜╨╛╨▓╨╗╨╡╨╜╨╕╨╡ ax
 	iret
 INTERRUPT ENDP
 
@@ -129,11 +129,11 @@ ISLOADED PROC near
         push es
 	push bx
 
-	mov ax,351Ch ;получение вектора прерываний
+	mov ax,351Ch ;╨┐╨╛╨╗╤Г╤З╨╡╨╜╨╕╨╡ ╨▓╨╡╨║╤В╨╛╤А╨░ ╨┐╤А╨╡╤А╤Л╨▓╨░╨╜╨╕╨╣
 	int 21h
 
 	mov dx,es:[bx+11]
-	cmp dx,0FFDAh ;проверка на совпадение кода
+	cmp dx,0FFDAh ;╨┐╤А╨╛╨▓╨╡╤А╨║╨░ ╨╜╨░ ╤Б╨╛╨▓╨┐╨░╨┤╨╡╨╜╨╕╨╡ ╨║╨╛╨┤╨░
 	je int_is_loaded
 	mov al,0h
 	pop bx
@@ -219,19 +219,19 @@ UNLOAD PROC near
 
 	cli
 	push ds
-	mov dx,es:[bx+9]   ;IP стандартного
-	mov ax,es:[bx+7]   ;CS стандартного
+	mov dx,es:[bx+9]   ;IP ╤Б╤В╨░╨╜╨┤╨░╤А╤В╨╜╨╛╨│╨╛
+	mov ax,es:[bx+7]   ;CS ╤Б╤В╨░╨╜╨┤╨░╤А╤В╨╜╨╛╨│╨╛
 	mov ds,ax
 	mov ax,251Ch
 	int 21h
 	pop ds
 	sti
 
-	mov dx,offset int_unload    ;сообщение о выгрузке
+	mov dx,offset int_unload    ;╤Б╨╛╨╛╨▒╤Й╨╡╨╜╨╕╨╡ ╨╛ ╨▓╤Л╨│╤А╤Г╨╖╨║╨╡
 	mov ah,09h
 	int 21h
 
-;Удаление MCB
+;╨г╨┤╨░╨╗╨╡╨╜╨╕╨╡ MCB
 	push es
 
 	mov cx,es:[bx+3]
@@ -256,22 +256,22 @@ Main PROC far
 	mov bx,02Ch
 	mov ax,[bx]
 	mov SR_PSP,ax
-	mov AD_PSP,ds  ;сохраняем PSP
+	mov AD_PSP,ds  ;╤Б╨╛╤Е╤А╨░╨╜╤П╨╡╨╝ PSP
 	sub ax,ax
 	xor bx,bx
 
 	mov ax,data
 	mov ds,ax
 
-	call CHECK_UNLOAD_FLAG   ;Загрузка или выгрузка(проверка параметра)
+	call CHECK_UNLOAD_FLAG   ;╨Ч╨░╨│╤А╤Г╨╖╨║╨░ ╨╕╨╗╨╕ ╨▓╤Л╨│╤А╤Г╨╖╨║╨░(╨┐╤А╨╛╨▓╨╡╤А╨║╨░ ╨┐╨░╤А╨░╨╝╨╡╤В╤А╨░)
 	cmp al,1h
 	je un_load
 
-	call ISLOADED   ;Установлен ли разработанный вектор прерывания
+	call ISLOADED   ;╨г╤Б╤В╨░╨╜╨╛╨▓╨╗╨╡╨╜ ╨╗╨╕ ╤А╨░╨╖╤А╨░╨▒╨╛╤В╨░╨╜╨╜╤Л╨╣ ╨▓╨╡╨║╤В╨╛╤А ╨┐╤А╨╡╤А╤Л╨▓╨░╨╜╨╕╤П
 	cmp al,01h
 	jne al_loaded
 
-	mov dx,offset int_al_loaded	;Уже установлен(выход с сообщение)
+	mov dx,offset int_al_loaded	;╨г╨╢╨╡ ╤Г╤Б╤В╨░╨╜╨╛╨▓╨╗╨╡╨╜(╨▓╤Л╤Е╨╛╨┤ ╤Б ╤Б╨╛╨╛╨▒╤Й╨╡╨╜╨╕╨╡)
 	mov ah,09h
 	int 21h
 
@@ -280,9 +280,9 @@ Main PROC far
 
 al_loaded:
 
-;Загрузка
+;╨Ч╨░╨│╤А╤Г╨╖╨║╨░
 	call LOAD
-;Оставляем обработчик прерываний в памяти
+;╨Ю╤Б╤В╨░╨▓╨╗╤П╨╡╨╝ ╨╛╨▒╤А╨░╨▒╨╛╤В╤З╨╕╨║ ╨┐╤А╨╡╤А╤Л╨▓╨░╨╜╨╕╨╣ ╨▓ ╨┐╨░╨╝╤П╤В╨╕
 	mov dx,offset LAST_BYTE
 	mov cl,4h
 	shr dx,cl
@@ -292,7 +292,7 @@ al_loaded:
 	mov ax,3100h
 	int 21h
 
-;Выгрузка
+;╨Т╤Л╨│╤А╤Г╨╖╨║╨░
 un_load:
 
 	call ISLOADED
@@ -305,7 +305,7 @@ un_load:
 	int 21h
 
 not_loaded:
-	mov dx,offset int_not_loaded      ;Если резидент не установлен, то нежелательно выгружать стандартный ВП
+	mov dx,offset int_not_loaded      ;╨Х╤Б╨╗╨╕ ╤А╨╡╨╖╨╕╨┤╨╡╨╜╤В ╨╜╨╡ ╤Г╤Б╤В╨░╨╜╨╛╨▓╨╗╨╡╨╜, ╤В╨╛ ╨╜╨╡╨╢╨╡╨╗╨░╤В╨╡╨╗╤М╨╜╨╛ ╨▓╤Л╨│╤А╤Г╨╢╨░╤В╤М ╤Б╤В╨░╨╜╨┤╨░╤А╤В╨╜╤Л╨╣ ╨Т╨Я
 	mov ah,09h
 	int 21h
 
@@ -317,9 +317,9 @@ Main ENDP
 CODE ENDS
 
 DATA SEGMENT
-	int_not_loaded db 'Резидент не загружен',13,10,'$'
-	int_al_loaded db 'Резидент уже загружен',13,10,'$'
-	int_loaded db 'Резидент загружен',13,10,'$'
-	int_unload db 'Резидент был выгружен',13,10,'$'
+	int_not_loaded db '╨а╨╡╨╖╨╕╨┤╨╡╨╜╤В ╨╜╨╡ ╨╖╨░╨│╤А╤Г╨╢╨╡╨╜',13,10,'$'
+	int_al_loaded db '╨а╨╡╨╖╨╕╨┤╨╡╨╜╤В ╤Г╨╢╨╡ ╨╖╨░╨│╤А╤Г╨╢╨╡╨╜',13,10,'$'
+	int_loaded db '╨а╨╡╨╖╨╕╨┤╨╡╨╜╤В ╨╖╨░╨│╤А╤Г╨╢╨╡╨╜',13,10,'$'
+	int_unload db '╨а╨╡╨╖╨╕╨┤╨╡╨╜╤В ╨▒╤Л╨╗ ╨▓╤Л╨│╤А╤Г╨╢╨╡╨╜',13,10,'$'
 DATA ENDS
 END Main
