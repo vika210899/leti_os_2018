@@ -8,14 +8,13 @@ ASSUME CS:CODE, DS:DATA, SS:STACK
 setCurs PROC
 	push ax
 	push bx
-	push dx
+	;push dx
 	push cx
 	mov ah,02h
 	mov bh,0
-
 	int 10h
 	pop cx
-	pop dx
+	;pop dx
 	pop bx
 	pop ax
 	ret
@@ -27,6 +26,8 @@ getCurs PROC
 	push cx
 	mov ah,03h
 	mov bh,0
+	int 10h
+	mov ah,8
 	int 10h
 	pop cx
 	pop bx
@@ -56,8 +57,13 @@ INTER PROC FAR
 	KEEP_IP DW 0
 	KEEP_PSP DW 0
 	COUNT db 0
+	COUNT_1 db 0
+	COUNT_2 db 0
+	COUNT_3 db 0
+	COUNT_4 db 0
 	KEEP_SS dw 0
 	KEEP_SP dw 0
+	KEEP_DX dw 0
 	INT_CODE:
 	push ax
 	mov KEEP_SS,ss
@@ -66,35 +72,112 @@ INTER PROC FAR
 	mov ss, ax
 	mov sp, 100h
 	push ax
+	push bx
+	push cx
 	push dx
 	push ds
 	push es
 	
+	
+	
+	
+	
+	
+	call getCurs	
+	push dx
+	mov dx,00130h
+	call setCurs
+	
+	cmp COUNT,0AH
+	jl rout_skip
+	mov count,0h
+rout_skip:
+	mov al,COUNT
+	or al,30h
+	call outputAL
+	
+	pop dx
+	call setCurs
+	inc COUNT
+	
+	jmp int_end
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	call getCurs
 	push dx
+
 	
 	mov dh,22
 	mov dl,40
 	call setCurs
 	
 		
-	cmp count,10
-	jle next_it
-	mov count,0
+	cmp COUNT_1,10
+	jl next_it
+	mov COUNT_1,0
+	add COUNT_2,1
+	cmp COUNT_2,10
+	jl next_it
+	mov COUNT_2,0
+	add COUNT_3,1
+	cmp COUNT_3,10
+	jl next_it
+	mov COUNT_3,0
+	add COUNT_4,1
+	cmp COUNT_4,10
+	jl next_it
+	mov COUNT_4,0
+	
 next_it:
 	
-	mov al,count    
+	mov al,COUNT_1    
 	add al,30h
 	call outputAL
-	inc count
+	
+	mov dl,39
+	call setCurs
+	
+	
+	mov al,COUNT_2    
+	add al,30h
+	call outputAL
+	
+	mov dl,38
+	call setCurs
+	
+	mov al,COUNT_3    
+	add al,30h
+	call outputAL
+	
+	mov dl,37
+	call setCurs
+	
+	mov al,COUNT_4    
+	add al,30h
+	call outputAL
+	
+	inc COUNT_1
+	
+	
 	pop dx
 	call setCurs
-
-
 	
+int_end:
 	pop es
 	pop ds
 	pop dx
+	pop cx
+	pop bx
 	pop ax 
 	mov ss, KEEP_SS
 	mov sp, KEEP_SP
