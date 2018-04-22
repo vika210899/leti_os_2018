@@ -11,7 +11,7 @@ EnvContent			db		'Content of the environment: ' , '$'
 ModPath				db		'Module path: ' , '$'
 ENDL				db		0dh,0ah,'$'
 
-
+	
 TETR_TO_HEX		PROC	near
 		and		al,0fh
 		cmp		al,09
