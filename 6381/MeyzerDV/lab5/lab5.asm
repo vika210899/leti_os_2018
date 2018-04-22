@@ -1,3 +1,7 @@
+ISTACK SEGMENT STACK
+	dw 100h dup (?)
+ISTACK ENDS
+
 CODE SEGMENT
  ASSUME CS:CODE, DS:DATA, ES:DATA, SS:STACK
 START: JMP BEGIN
@@ -10,8 +14,17 @@ ROUT PROC FAR
 	KEEP_IP DW 0
 	KEEP_CS DW 0 ; Переменные для хранения CS и IP старого обработчика
 	KEEP_PSP DW 0 ; Переменная для хранения адреса PSP у пользовательского обработчика
+	KEEP_SS DW 0
+	KEEP_SP DW 0
+	KEEP_AX DW 0
 	INT_CODE:
-	push ax
+	
+	mov CS:KEEP_AX, ax
+	mov CS:KEEP_SS, ss
+	mov CS:KEEP_SP, sp
+	mov ax, ISTACK
+	mov ss, ax
+	mov sp, 100h
 	push dx
 	push ds
 	push es
@@ -32,10 +45,14 @@ ROUT PROC FAR
 	
 	ROUT_STNDRD:
 	; Переходим в стандартный обработчик прерывания:
-		; Статья 39 Рудаков
-		pushf
-		call dword ptr CS:KEEP_IP
-		jmp ROUT_END
+		pop es
+		pop ds
+		pop dx
+		mov ax, CS:KEEP_AX
+		mov sp, CS:KEEP_SP
+		mov ss, CS:KEEP_SS
+		jmp dword ptr CS:KEEP_IP
+		; jmp ROUT_END
 	
 	ROUT_USER:
 	; Пользовательский обработчик:
@@ -70,9 +87,11 @@ ROUT PROC FAR
 	pop es
 	pop ds
 	pop dx
-	pop ax
+	mov ax, CS:KEEP_AX
 	mov al,20h
 	out 20h,al
+	mov sp, CS:KEEP_SP
+	mov ss, CS:KEEP_SS
 	iret
 ROUT ENDP
 	LAST_BYTE:
