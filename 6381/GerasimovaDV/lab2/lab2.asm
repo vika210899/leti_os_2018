@@ -13,7 +13,6 @@ seg_inaccess	db 'Сегментный адрес недоступной памя
 segenv		db 'Сегментный адрес среды:    ',0DH,0AH,EOF
 env 		db 'Содержимое области среды:',0DH,0AH,EOF
 dir	db 'Путь загружаемого модуля:',0DH,0AH,EOF
-symb  db 'нет символов',0DH,0AH,EOF
 tail_		db 'Хвост командной строки: ', EOF, 0AH,EOF
 
 ; ПРОЦЕДУРЫ:
@@ -119,26 +118,23 @@ TAIL PROC NEAR
 	push si
 	push di
 
-	mov ch, ds:[80h] ; загружаем в ch число символов в конце командной строки
-	mov si, 81h
-	mov di, offset tail_
-	add di, 20
-CopyCmd:
-	cmp ch, 0h
-	je NoCmd ; если число символов в хвосте командной строки = 0
-;No NoCmd
-	mov al, ds:[si] ; копируем в di очередной элемент (по адресу si)
-	mov [di], al    ; хвоста командной строки
-	inc di ; смещаем адреса si и di
-	inc si ;  на один символ вправо
-	dec ch ; --ch
-	jmp CopyCmd ; циклически копируем командную строку
-NoCmd:
-  mov al, 0h
-  mov [di], al
-	mov dx, offset symb
-	call PRINT
-
+  ;Получение хвоста командной строки
+  mov bx,080h
+  xor cx,cx
+  mov cl,[bx]
+  mov ah,02h
+  mov si,081h
+  test cx,cx
+  jz end1
+  ;Если хвост отсутствует
+get_tail:
+  lodsb
+  mov dl,al
+  int 21h
+  loop get_tail
+end1:
+;  mov dx, offset endl ; прыжок на новую строчку
+;  call PRINT
 	pop di
 	pop si
 	pop dx
