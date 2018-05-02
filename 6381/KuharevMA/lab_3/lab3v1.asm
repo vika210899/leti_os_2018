@@ -229,6 +229,8 @@ GET_ALL_MSB_DATA PROC NEAR
 	int 21h
 	sub bx, 2h
 	mov es, es:[bx]
+	
+
 
 FOR_EACH_MSB:
 		call GET_MCB_DATA
@@ -242,6 +244,10 @@ FOR_EACH_MSB:
 
 		cmp bl, 4Dh
 		je FOR_EACH_MSB
+		
+	xor al, al
+	mov ah, 4ch
+	int 21h
 GET_ALL_MSB_DATA ENDP
 
 begin:
@@ -255,9 +261,9 @@ begin:
 	call PRINT_STRING
 
 	call GET_ALL_MSB_DATA
-
+	
 	xor al, al
-	mov ah, 4Ch
+	mov ah, 4ch
 	int 21h
 testpc ends
 end start

@@ -244,6 +244,10 @@ FOR_EACH_MSB:
 
 		cmp bl, 4Dh
 		je FOR_EACH_MSB
+		
+	xor al, al
+	mov ah, 4ch
+	int 21h
 GET_ALL_MSB_DATA ENDP
 
 begin:
