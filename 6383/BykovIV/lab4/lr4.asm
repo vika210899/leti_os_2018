@@ -216,11 +216,11 @@ UNLOAD_INT PROC NEAR
 UNLOAD_INT ENDP
 
 OUTPUT_ALL PROC NEAR
-		push 	AX
-		mov  	AH,09h
-	    int  	21h
-	    pop	 	AX
-	    ret
+	push 	AX
+	mov  	AH,09h
+	int  	21h
+	pop	 	AX
+	ret
 OUTPUT_ALL ENDP
 
 MAIN  	PROC FAR
@@ -269,9 +269,9 @@ CODE 	ENDS
 
 DATA SEGMENT
 	STR_INSTALL	    	DB 'is installed', 0dh, 0ah, '$'
-    STR_NOT_INSTALL 	DB 'not installed', 0dh, 0ah, '$'
+    	STR_NOT_INSTALL 	DB 'not installed', 0dh, 0ah, '$'
    	STR_IS_ALR_INSTALL 	DB 'is already installed', 0dh, 0ah, '$'
-	STR_UNLOAD			DB 'was unloaded', 0dh, 0ah, '$'
+	STR_UNLOAD		DB 'was unloaded', 0dh, 0ah, '$'
 DATA ENDS
 
 END Main 
