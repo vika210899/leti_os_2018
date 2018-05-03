@@ -132,8 +132,6 @@ MAIN PROC far
 	push DS
 		mov  DX, offset INTERRUPT 	; смещение для прерывания в DX
 		mov  AX, SEG    INTERRUPT 	; сегмент прерывания	
-		mov  DX, offset INTERRUPT 	; смещение для прерывания в DX
-		mov  AX, SEG    INTERRUPT 	; сегмент прерывания
 		mov  DS, AX				  	; помещаем в DS
 		mov  AH, 25h 			  	; функция установки вектора
 		mov  AL, 09h 			  	; номер вектора
@@ -180,9 +178,14 @@ nqwe:
 	pop  DS
 	STI
 	
-	mov  ES, ES:KEEP_PSP		; удаление 
-	mov  AH, 49h				; резидентной
-	int  21h					; программы
+	mov  ES, ES:KEEP_PSP			; Начинаем удалять прерывание + его среду
+	
+	push ES							
+		mov  ES, ES:[2Ch]			;
+		mov  AH, 49h  				;
+		int  21h					; удаление среды резидентного прерывания
+	pop  ES						
+	int  21h						; удаление  резидентной программы
 	
 	jmp exit
 	
