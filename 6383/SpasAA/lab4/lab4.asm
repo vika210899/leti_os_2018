@@ -6,7 +6,27 @@ CODE SEGMENT
 ;---------------------------------------
 ; наш обработчик прерывания 
 ROUT PROC FAR
+	jmp go_
+	SIGNATURA dw 0ABCDh
+	KEEP_PSP dw 0 ; для хранения psp нашего обработчика
+	KEEP_IP dw 0 ; переменная для хранения смещения стандартного обработчика прерывания
+	KEEP_CS dw 0 ; для хранения его сегмента 
+	INT_STACK		DW 	100 dup (?)
+	COUNT	dw 0 ; для хранения количества вызовов обработчика
+	KEEP_SS DW 0
+	KEEP_AX	DW 	?
+    KEEP_SP DW 0
+	VIVOD db 'Количество вызовов прерывания:     $'
 	; сохраняем используемые регистры:
+	go_:
+	mov KEEP_SS, SS 
+	mov KEEP_SP, SP 
+	mov KEEP_AX, AX 
+	mov AX,seg INT_STACK 
+	mov SS,AX 
+	mov SP,0 
+	mov AX,KEEP_AX
+	
 	push ax
 	push bp
 	push es
@@ -34,13 +54,11 @@ ROUT PROC FAR
 	mov al,20h
 	out 20h,al
 	pop ax
+	mov 	AX,KEEP_SS
+ 	mov 	SS,AX
+ 	mov 	AX,KEEP_AX
+ 	mov 	SP,KEEP_SP
 	iret
-	SIGNATURA dw 0ABCDh
-	KEEP_PSP dw 0 ; для хранения psp нашего обработчика
-	KEEP_IP dw 0 ; переменная для хранения смещения стандартного обработчика прерывания
-	KEEP_CS dw 0 ; для хранения его сегмента 
-	COUNT	dw 0 ; для хранения количества вызовов обработчика
-	VIVOD db 'Количество вызовов прерывания:     $'
 ROUT ENDP 
 ; --------------------------------------
 TETR_TO_HEX PROC near
