@@ -26,7 +26,7 @@ BEGIN:
  	mov 	SS, AX
  	mov 	SP, 0
  	mov 	AX, KEEP_AX  
-	in 		AL,60h
+	in 	AL,60h
 	cmp 	AL,1Eh
 	jne 	STAND_INT
 	jmp 	DO_REQ
@@ -40,9 +40,9 @@ STAND_INT:
 	jmp 	dword ptr CS:[KEEP_IP]	
 DO_REQ:
 	push 	AX
-	in 		AL,61h   
+	in 	AL,61h   
 	mov 	AH,AL     
-	or 		AL,80h    
+	or 	AL,80h    
 	out 	61h,AL    
 	xchg 	AH,AL   
 	out 	61h,AL    
@@ -54,8 +54,8 @@ _PUSH:
 	mov 	CL,'D'
 	mov 	CH,00h
 	int 	16h
-	or 		AL,AL
-	jz 		_QUIT 
+	or 	AL,AL
+	jz 	_QUIT 
 	CLI
 	mov 	AX,ES:[1Ah]
 	mov 	ES:[1Ch],AX 
@@ -83,8 +83,8 @@ CHECK_INT PROC NEAR
 	int 	21h
 	mov 	DX,ES:[BX + 11]
 	cmp 	DX,01234h
-	je 		_INSTALL
-	mov	 	AL,00h
+	je 	_INSTALL
+	mov	 AL,00h
 	jmp 	_END
 _INSTALL:
 	mov 	AL,01h
@@ -185,12 +185,12 @@ OUTPUT_ALL PROC NEAR
 	push 	AX
 	mov  	AH,09h
 	int  	21h
-	pop	 	AX
+	pop	AX
 	ret
 OUTPUT_ALL ENDP
 
 MAIN  	PROC FAR
-    mov 	BX,2Ch
+    	mov 	BX,2Ch
 	mov 	AX,[BX]
 	mov 	PSP2,AX
 	mov 	PSP1,DS 
@@ -202,7 +202,7 @@ MAIN  	PROC FAR
 	xor 	DX,DX
 	call 	CHECK_UN 
 	cmp 	AL,01h
-	je 		_UNLOAD		
+	je 	_UNLOAD		
 	call 	CHECK_INT 
 	cmp 	AL,01h
 	jne 	_NOT
@@ -220,7 +220,7 @@ _NOT:
 _UNLOAD:
 	call 	CHECK_INT
 	cmp 	AL,0h
-	je 		_NOT2
+	je 	_NOT2
 	call 	UNLOAD_INT
 	jmp 	_EXIT
 _NOT2: 
@@ -235,9 +235,9 @@ CODE 	ENDS
 
 DATA SEGMENT
 	STR_INSTALL    		DB 'is installed', 0dh, 0ah, '$'
-    STR_NOT_INSTALL 	DB 'is not installed', 0dh, 0ah, '$'
+    	STR_NOT_INSTALL 	DB 'is not installed', 0dh, 0ah, '$'
    	STR_IS_ALR_INSTALL 	DB 'is already installed', 0dh, 0ah, '$'
-	STR_UNLOAD			DB 'was unloaded', 0dh, 0ah, '$'
+	STR_UNLOAD		DB 'was unloaded', 0dh, 0ah, '$'
 DATA ENDS
 
 END Main 
