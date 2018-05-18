@@ -1,20 +1,33 @@
 .Model small
 .DATA
-PSP dw ?
+;PSP dw ?
 isUd db ?
 isloaded db ?
 sg dw ?
 num db 0
-KEEP_CS DW ? 
-KEEP_IP DW ?
 strld db 13, 10, "Resident has been loaded$", 13, 10
 struld db 13, 10, "Resident has been unloaded$"
 strald db 13, 10, "Resident has been already loaded$"
+
+
+cheaker db  "123445"
+
+
 .STACK 400h
 .CODE
 resID dw 0ff00h
 ;-----------------------------------
 changing PROC FAR
+mov   CS:[A_X], ax
+mov  CS:[S_S], SS
+mov  CS:[S_P], SP
+
+cli	
+mov AX, CS:[M_S]
+mov SS, ax
+mov sp, cs:[M_P]
+sti
+	
 	mov cs:[key], 0
 	in al, 60h
 	cmp al, 10h   
@@ -38,8 +51,16 @@ changing PROC FAR
 		pop ax
 		jnz cond
 	interput:
+	cli	
+		mov AX, CS:[S_S]
+		mov SS, ax
+		mov sp, cs:[S_P]
+	
+	sti
+		mov  ax, cs:[A_X]
+		
 		jmp dword ptr cs:[Int9_vect];
-	cond: 
+	cond: 	
 		push ax
 		in al, 61h   
 		mov ah, al   
@@ -111,15 +132,26 @@ changing PROC FAR
 		STI	
 		pop es
 	notcls:
+	cli	
+		mov AX, CS:[S_S]
+		mov SS, ax
+		mov sp, cs:[S_P]
+	sti
 		IRET		
 		Int9_vect dd ?		
 		key db 0 
+		
+		S_S dw 0
+		S_P dw 0
+		M_S dw 0
+		M_P dw 0
+		A_X dw 0
 changing  ENDP  
 ;-----------------------------------
 debark PROC
 	push es
 	push ax
-	mov ax, psp
+	mov ax, cs:[PSP]
 	mov es, ax
 	mov cl, es:[80h]
 	mov dl, cl
@@ -162,34 +194,50 @@ AlreadyLoad PROC
 		ret
 AlreadyLoad ENDP
 ;-----------------------------------
-UnLoad proc
-	push    DS              
+UnLoad proc 
+	push    DS
+	push    ES		
+	push    BX
+	
+	  
         mov     AX, ES:[KEEP_CS]    
         mov     DS, AX         
         mov     DX, ES:[KEEP_IP]    
         mov     AH, 25h
-        mov     AL, 1Ch
-        int     21h            
-        pop     DS
+	    mov     AL, 09h
+        
+		int     21h   
         sti                    
-        mov     AX, KEEP_CS    
-        sub     AX, PSP
-        mov     ES, AX         
-        mov     BX, ES:[2Ch]   
+	
+		mov     AX, ES:[PSP]
+		mov     ES, AX
+		mov     BX, ES:[2Ch]
+		
         mov     AH, 49h        
         int     21h
-        mov     ES, BX
-        mov     AH, 49h       
+        mov     ES, BX    
         int     21h
+		
+	pop  BX
+	pop  ES
+	pop  DS
+		ret
+	
 Unload endp
 ;-----------------------------------
 Resident proc
 	lea dx, strld
 	call WRITE
-	lea dx, temp
-	sub dx, psp
-	mov cl, 4
-	shr dx, cl
+	
+	mov dx, ss
+	sub dx, CS:[PSP]
+	shl dx, 4		
+	add dx, 410h	
+	shr dx, 4		
+	
+	mov  CS:[M_S], SS
+	mov  CS:[M_P], sp
+	
 	mov Ax, 3100h
 	int 21h
 	ret
@@ -208,7 +256,7 @@ Main PROC  FAR
 	mov ax, @DATA		  
 	mov ds, ax
 	mov ax, es
-	mov psp, ax
+	mov CS:[psp], ax
 
 	call AlreadyLoad
 	
@@ -216,10 +264,10 @@ Main PROC  FAR
 
 	cmp isloaded, 1
 	je a
-	mov ax, 3509h 
-	int 21h
-	mov KEEP_IP, bx 
-	mov KEEP_CS, es  
+	mov ax, 3509h 		
+	int 21h				
+	mov CS:KEEP_IP, bx 
+	mov CS:KEEP_CS, es  
 	mov word ptr int9_vect+2, es
 	mov word ptr int9_vect, bx
 
@@ -233,41 +281,35 @@ Main PROC  FAR
 	call Resident
 	a:   
 		 push     ES	
-  	         mov      CX, 238Bh
-	         mov      ES, CX
-	         mov      AH, 49h
-	         int         21h
-	         pop       ES
-         	 mov     CX, 2356h
-	         mov     ES, CX
-	         int         21h
+  	     
+		 pop      ES
+		 
+	mov ax, 3509h 		
+	int 21h			
+		 
 		cmp isud, 1
 		jne b
-		call unload
+		
+		call unload	
+		
 		lea dx, struld
 		call WRITE
+		
 		mov ah, 4ch                        
 		int 21h   
 	b:
 
-		push     ES	
-		mov      CX, 238Bh
-		mov      ES, CX
-		mov      AH, 49h
-		int         21h
-		pop       ES
-	
-		mov     CX, 2356h
-		mov     ES, CX
-		int         21h
 		lea dx, strald
 		call WRITE
 		mov ah, 4ch                        
 		int 21h                             
 Main ENDP
 
+PSP dw ?
+KEEP_CS DW ? 
+KEEP_IP DW ?
+
 TEMP PROC
 TEMP ENDP
 
 END Main
-		  
