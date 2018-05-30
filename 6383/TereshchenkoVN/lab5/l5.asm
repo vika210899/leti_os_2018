@@ -1,3 +1,4 @@
+﻿
 .Model small
 .DATA
 ;PSP dw ?
@@ -231,12 +232,10 @@ Resident proc
 	
 	mov dx, ss
 	sub dx, CS:[PSP]
-	shl dx, 4		
-	add dx, 410h	
-	shr dx, 4		
+	add dx, 2h
 	
 	mov  CS:[M_S], SS
-	mov  CS:[M_P], sp
+	mov  CS:[M_P], 15h
 	
 	mov Ax, 3100h
 	int 21h
